@@ -1,6 +1,7 @@
 version: '3.8'
+
 services:
-  mongodb:
+  mongodb: #product, user, order, cart, payment
     image: mongo:6.0
     container_name: mongo_microcommerce
     ports:
@@ -11,7 +12,7 @@ services:
       MONGO_INITDB_DATABASE: microcommerce
     restart: always
 
-  redis:
+  redis: #cache products, login, session
     image: redis:latest
     container_name: redis_microcommerce
     ports:
@@ -28,15 +29,15 @@ services:
     restart: always
 
   kafka:
-    image: bitnami/kafka:latest
+    image: bitnami/kafka:3.5.0
     container_name: kafka_microcommerce
     ports:
       - "9092:9092"
     environment:
       - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper_microcommerce:2181
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka_microcommerce:9092
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092 #how kafka will listen for connections
       - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_BROKER_ID=1
     depends_on:
       - zookeeper
     restart: always
