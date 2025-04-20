@@ -12,6 +12,7 @@
 
   <artifactId>product-service</artifactId>
 
+<!-- this is an exec app, its an API Rest, has SpringBootAppliation, must be packaged -->
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>

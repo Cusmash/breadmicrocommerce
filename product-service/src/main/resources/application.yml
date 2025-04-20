@@ -7,3 +7,6 @@ spring:
       host: localhost
       port: 27017
       database: productdb
+
+  # docker run -d --name mongo_microcommerce -p 27017:27017 mongo:latest
+  #   docker pull mongo
