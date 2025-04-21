@@ -42,8 +42,10 @@ public class ProductService {
                 existingProduct.setDescription(updatedProduct.getDescription());
                 existingProduct.setPrice(updatedProduct.getPrice());
                 existingProduct.setQuantity(updatedProduct.getQuantity());
+                existingProduct.setImgUrl(updatedProduct.getImgUrl());
                 return productRepository.save(existingProduct);
-            }).orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+            })
+            .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
     }
 
     @CacheEvict(value = { "products_list", "product_by_id" }, allEntries = true)
