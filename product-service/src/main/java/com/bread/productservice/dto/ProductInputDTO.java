@@ -1,5 +1,7 @@
 package com.bread.productservice.dto;
 
+import com.bread.productservice.model.ProductType;
+
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -24,4 +26,7 @@ public class ProductInputDTO {
     @NotNull(message = "La cantidad no puede ser nula")
     @Positive(message = "La cantidad debe ser mayor a 0")
     private Integer quantity;
+
+    @NotBlank(message = "Type cannot be empty")
+    private ProductType type;
 }

@@ -1,10 +1,13 @@
 package com.bread.productservice.service;
 
 import com.bread.productservice.model.Product;
+import com.bread.productservice.model.ProductType;
 import com.bread.productservice.repository.ProductRepository;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -43,6 +46,8 @@ public class ProductService {
                 existingProduct.setPrice(updatedProduct.getPrice());
                 existingProduct.setQuantity(updatedProduct.getQuantity());
                 existingProduct.setImgUrl(updatedProduct.getImgUrl());
+                existingProduct.setType(updatedProduct.getType());
+                
                 return productRepository.save(existingProduct);
             })
             .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
@@ -52,5 +57,29 @@ public class ProductService {
     public void deleteProduct(String id) {
         productRepository.deleteById(id);
     }
+
+    public List<Product> getAllProductsPaged(int page, int size) {
+    Pageable pageable = PageRequest.of(page, size);
+    return productRepository.findAll(pageable).getContent();
+    }
+
+    public List<Product> searchProductsByName(String name, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productRepository.findByNameContainingIgnoreCase(name, pageable);
+    }
+
+    public List<Product> filterProducts(ProductType type, Double priceFrom, Double priceTo, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+    
+        if (type != null && priceFrom != null && priceTo != null) {
+            return productRepository.findByTypeAndPriceBetween(type, priceFrom, priceTo, pageable);
+        } else if (type != null) {
+            return productRepository.findByType(type, pageable);
+        } else if (priceFrom != null && priceTo != null) {
+            return productRepository.findByPriceBetween(priceFrom, priceTo, pageable);
+        } else {
+            return productRepository.findAll(pageable).getContent();
+        }
+    }    
 }
 

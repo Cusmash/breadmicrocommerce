@@ -1,3 +1,10 @@
+enum ProductType {
+    GLUTEN
+    GLUTEN_FREE
+    VEGAN
+    KETO
+}
+
 type Product {
     id: ID!
     name: String!
@@ -5,15 +12,27 @@ type Product {
     price: Float!
     quantity: Int!
     imgUrl: String
+    type: ProductType
+}
+
+input ProductInputDTO {
+    name: String!
+    description: String!
+    price: Float!
+    quantity: Int!
+    imgUrl: String!
+    type: ProductType!
 }
 
 type Query {
-    getAllProducts: [Product]
+    getAllProducts(page: Int, size: Int): [Product]
     getProductById(id: ID!): Product
+    searchProductsByName(name: String!, page: Int, size: Int): [Product]
+    filterProducts(type: ProductType, priceFrom: Float, priceTo: Float, page: Int, size: Int): [Product]
 }
 
 type Mutation {
-    createProduct(name: String!, description: String!, price: Float!, quantity: Int!, imgUrl: String!): Product
-    updateProduct(id: ID!, name: String!, description: String!, price: Float!, quantity: Int!, imgUrl: String!): Product
+    createProduct(input: ProductInputDTO!): Product
+    updateProduct(id: ID!, input: ProductInputDTO!): Product
     deleteProduct(id: ID!): Boolean
 }

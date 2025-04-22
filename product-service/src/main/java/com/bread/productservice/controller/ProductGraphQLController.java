@@ -2,10 +2,10 @@ package com.bread.productservice.controller;
 
 import com.bread.productservice.dto.ProductInputDTO;
 import com.bread.productservice.model.Product;
+import com.bread.productservice.model.ProductType;
 import com.bread.productservice.service.ProductService;
 
 import jakarta.validation.Valid;
-
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -24,8 +24,10 @@ public class ProductGraphQLController {
     }
 
     @QueryMapping
-    public List<Product> getAllProducts() {
-        return productService.getAllProducts();
+    public List<Product> getAllProducts(@Argument Integer page, @Argument Integer size) {
+        int pageNumber = (page != null) ? page : 0;
+        int pageSize = (size != null) ? size : 10;
+        return productService.getAllProductsPaged(pageNumber, pageSize);
     }
 
     @QueryMapping
@@ -41,26 +43,19 @@ public class ProductGraphQLController {
         newProduct.setPrice(input.getPrice());
         newProduct.setQuantity(input.getQuantity());
         newProduct.setImgUrl(input.getImgUrl());
+        newProduct.setType(input.getType());
         return productService.createProduct(newProduct);
     }
 
-
     @MutationMapping
-    public Product updateProduct(
-            @Argument String id,
-            @Argument String name,
-            @Argument String description,
-            @Argument Float price,
-            @Argument Integer quantity,
-            @Argument String imgUrl) {
-
+    public Product updateProduct(@Argument String id, @Argument @Valid ProductInputDTO input) {
         Product updatedProduct = new Product();
-        updatedProduct.setName(name);
-        updatedProduct.setDescription(description);
-        updatedProduct.setPrice(price);
-        updatedProduct.setQuantity(quantity);
-        updatedProduct.setImgUrl(imgUrl);
-
+        updatedProduct.setName(input.getName());
+        updatedProduct.setDescription(input.getDescription());
+        updatedProduct.setPrice(input.getPrice());
+        updatedProduct.setQuantity(input.getQuantity());
+        updatedProduct.setImgUrl(input.getImgUrl());
+        updatedProduct.setType(input.getType());
         return productService.updateProduct(id, updatedProduct);
     }
 
@@ -68,5 +63,31 @@ public class ProductGraphQLController {
     public Boolean deleteProduct(@Argument String id) {
         productService.deleteProduct(id);
         return true;
+    }
+
+    @QueryMapping
+    public List<Product> searchProductsByName(
+            @Argument String name,
+            @Argument Integer page,
+            @Argument Integer size) {
+
+        int pageNumber = (page != null) ? page : 0;
+        int pageSize = (size != null) ? size : 10;
+        return productService.searchProductsByName(name, pageNumber, pageSize);
+    }
+
+    @QueryMapping
+    public List<Product> filterProducts(
+        @Argument ProductType type,
+        @Argument Float priceFrom,
+        @Argument Float priceTo,
+        @Argument Integer page,
+        @Argument Integer size) {
+
+        int pageNumber = (page != null) ? page : 0;
+        int pageSize = (size != null) ? size : 10;
+        return productService.filterProducts(type, priceFrom != null ? priceFrom.doubleValue() : null,
+            priceTo != null ? priceTo.doubleValue() : null,
+            pageNumber, pageSize);
     }
 }
