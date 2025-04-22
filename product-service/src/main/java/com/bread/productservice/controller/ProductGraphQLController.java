@@ -1,7 +1,11 @@
 package com.bread.productservice.controller;
 
+import com.bread.productservice.dto.ProductInputDTO;
 import com.bread.productservice.model.Product;
 import com.bread.productservice.service.ProductService;
+
+import jakarta.validation.Valid;
+
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -30,21 +34,16 @@ public class ProductGraphQLController {
     }
 
     @MutationMapping
-    public Product createProduct(
-            @Argument String name,
-            @Argument String description,
-            @Argument Float price,
-            @Argument Integer quantity,
-            @Argument String imgUrl) {
-
+    public Product createProduct(@Argument @Valid ProductInputDTO input) {
         Product newProduct = new Product();
-        newProduct.setName(name);
-        newProduct.setDescription(description);
-        newProduct.setPrice(price);
-        newProduct.setQuantity(quantity);
-        newProduct.setImgUrl(imgUrl);
+        newProduct.setName(input.getName());
+        newProduct.setDescription(input.getDescription());
+        newProduct.setPrice(input.getPrice());
+        newProduct.setQuantity(input.getQuantity());
+        newProduct.setImgUrl(input.getImgUrl());
         return productService.createProduct(newProduct);
     }
+
 
     @MutationMapping
     public Product updateProduct(
