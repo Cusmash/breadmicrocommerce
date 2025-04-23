@@ -1,5 +1,6 @@
 package com.bread.productservice.controller;
 
+import com.bread.productservice.dto.PagedResponseDTO;
 import com.bread.productservice.dto.ProductInputDTO;
 import com.bread.productservice.model.Product;
 import com.bread.productservice.model.ProductType;
@@ -24,11 +25,18 @@ public class ProductGraphQLController {
     }
 
     @QueryMapping
-    public List<Product> getAllProducts(@Argument Integer page, @Argument Integer size) {
+    public PagedResponseDTO<Product> getAllProducts(
+        @Argument Integer page,
+        @Argument Integer size,
+        @Argument String sort
+    ) {
         int pageNumber = (page != null) ? page : 0;
         int pageSize = (size != null) ? size : 10;
-        return productService.getAllProductsPaged(pageNumber, pageSize);
+        String sortDirection = (sort != null && sort.equalsIgnoreCase("DESC")) ? "DESC" : "ASC";
+        return productService.getAllProductsPagedSorted(pageNumber, pageSize, sortDirection);
     }
+    
+       
 
     @QueryMapping
     public Optional<Product> getProductById(@Argument String id) {

@@ -5,6 +5,11 @@ enum ProductType {
     KETO
 }
 
+enum SortDirection {
+  ASC
+  DESC
+}
+
 type Product {
     id: ID!
     name: String!
@@ -24,8 +29,17 @@ input ProductInputDTO {
     type: ProductType!
 }
 
+type PagedProduct {
+    content: [Product]
+    pageNumber: Int
+    pageSize: Int
+    totalElements: Int
+    totalPages: Int
+    last: Boolean
+}
+
 type Query {
-    getAllProducts(page: Int, size: Int): [Product]
+    getAllProducts(page: Int, size: Int, sort: SortDirection): PagedProduct
     getProductById(id: ID!): Product
     searchProductsByName(name: String!, page: Int, size: Int): [Product]
     filterProducts(type: ProductType, priceFrom: Float, priceTo: Float, page: Int, size: Int): [Product]

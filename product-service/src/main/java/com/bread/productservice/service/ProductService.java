@@ -1,5 +1,6 @@
 package com.bread.productservice.service;
 
+import com.bread.productservice.dto.PagedResponseDTO;
 import com.bread.productservice.model.Product;
 import com.bread.productservice.model.ProductType;
 import com.bread.productservice.repository.ProductRepository;
@@ -8,6 +9,7 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -58,10 +60,20 @@ public class ProductService {
         productRepository.deleteById(id);
     }
 
-    public List<Product> getAllProductsPaged(int page, int size) {
-    Pageable pageable = PageRequest.of(page, size);
-    return productRepository.findAll(pageable).getContent();
-    }
+    public PagedResponseDTO<Product> getAllProductsPagedSorted(int page, int size, String sort) {
+        Sort.Direction direction = sort.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "price"));
+        var pageProducts = productRepository.findAll(pageable);
+    
+        return new PagedResponseDTO<>(
+            pageProducts.getContent(),
+            page,
+            size,
+            pageProducts.getTotalElements(),
+            pageProducts.getTotalPages(),
+            pageProducts.isLast()
+        );
+    }    
 
     public List<Product> searchProductsByName(String name, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
