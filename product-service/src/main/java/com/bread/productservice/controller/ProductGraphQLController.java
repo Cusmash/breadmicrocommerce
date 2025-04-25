@@ -2,6 +2,7 @@ package com.bread.productservice.controller;
 
 import com.bread.productservice.dto.PagedResponseDTO;
 import com.bread.productservice.dto.ProductInputDTO;
+import com.bread.productservice.dto.ProductFilterInput;
 import com.bread.productservice.model.Product;
 import com.bread.productservice.model.ProductType;
 import com.bread.productservice.service.ProductService;
@@ -35,8 +36,19 @@ public class ProductGraphQLController {
         String sortDirection = (sort != null && sort.equalsIgnoreCase("DESC")) ? "DESC" : "ASC";
         return productService.getAllProductsPagedSorted(pageNumber, pageSize, sortDirection);
     }
-    
-       
+
+    @QueryMapping
+    public PagedResponseDTO<Product> getFilteredProducts(
+        @Argument ProductFilterInput filter,
+        @Argument Integer page,
+        @Argument Integer size,
+        @Argument String sort
+    ) {
+        int pageNumber = (page != null) ? page : 0;
+        int pageSize = (size != null) ? size : 10;
+        String sortDirection = (sort != null && sort.equalsIgnoreCase("DESC")) ? "DESC" : "ASC";
+        return productService.getFilteredProducts(filter, pageNumber, pageSize, sortDirection);
+    }
 
     @QueryMapping
     public Optional<Product> getProductById(@Argument String id) {
@@ -52,6 +64,9 @@ public class ProductGraphQLController {
         newProduct.setQuantity(input.getQuantity());
         newProduct.setImgUrl(input.getImgUrl());
         newProduct.setType(input.getType());
+        newProduct.setFlavor(input.getFlavor());
+        newProduct.setOnSale(input.isOnSale());
+        newProduct.setDiscountPercentage(input.getDiscountPercentage());
         return productService.createProduct(newProduct);
     }
 
@@ -64,6 +79,9 @@ public class ProductGraphQLController {
         updatedProduct.setQuantity(input.getQuantity());
         updatedProduct.setImgUrl(input.getImgUrl());
         updatedProduct.setType(input.getType());
+        updatedProduct.setFlavor(input.getFlavor());
+        updatedProduct.setOnSale(input.isOnSale());
+        updatedProduct.setDiscountPercentage(input.getDiscountPercentage());
         return productService.updateProduct(id, updatedProduct);
     }
 

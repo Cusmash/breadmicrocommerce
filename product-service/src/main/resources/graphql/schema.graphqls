@@ -5,6 +5,16 @@ enum ProductType {
     KETO
 }
 
+enum Flavor {
+   CHOCOLATE
+    CANELA
+    VAINILLA
+    FRESA
+    PLATANO
+    NUEZ
+    MANTEQUILLA
+}
+
 enum SortDirection {
   ASC
   DESC
@@ -18,6 +28,9 @@ type Product {
     quantity: Int!
     imgUrl: String
     type: ProductType
+    flavor: Flavor
+    onSale: Boolean
+    discountPercentage: Float
 }
 
 input ProductInputDTO {
@@ -27,6 +40,17 @@ input ProductInputDTO {
     quantity: Int!
     imgUrl: String!
     type: ProductType!
+    flavor: Flavor
+    onSale: Boolean
+    discountPercentage: Float
+}
+
+input ProductFilterInput {
+    type: ProductType
+    flavor: Flavor
+    onSale: Boolean
+    priceFrom: Float
+    priceTo: Float
 }
 
 type PagedProduct {
@@ -40,9 +64,9 @@ type PagedProduct {
 
 type Query {
     getAllProducts(page: Int, size: Int, sort: SortDirection): PagedProduct
+    getFilteredProducts(filter: ProductFilterInput, page: Int, size: Int, sort: SortDirection): PagedProduct
     getProductById(id: ID!): Product
     searchProductsByName(name: String!, page: Int, size: Int): [Product]
-    filterProducts(type: ProductType, priceFrom: Float, priceTo: Float, page: Int, size: Int): [Product]
 }
 
 type Mutation {

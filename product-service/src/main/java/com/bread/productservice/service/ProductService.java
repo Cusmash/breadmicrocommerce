@@ -1,6 +1,7 @@
 package com.bread.productservice.service;
 
 import com.bread.productservice.dto.PagedResponseDTO;
+import com.bread.productservice.dto.ProductFilterInput;
 import com.bread.productservice.model.Product;
 import com.bread.productservice.model.ProductType;
 import com.bread.productservice.repository.ProductRepository;
@@ -92,6 +93,38 @@ public class ProductService {
         } else {
             return productRepository.findAll(pageable).getContent();
         }
-    }    
+    }  
+    
+    public PagedResponseDTO<Product> getFilteredProducts(ProductFilterInput filter, int page, int size, String sort) {
+        Sort.Direction direction = sort.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "price"));
+
+        List<Product> filteredProducts = productRepository.findAll().stream()
+                .filter(p -> filter.getType() == null || p.getType() == filter.getType())
+                .filter(p -> filter.getFlavor() == null || p.getFlavor() == filter.getFlavor())
+                .filter(p -> filter.getOnSale() == null || p.isOnSale() == filter.getOnSale())
+                .filter(p -> filter.getPriceFrom() == null || p.getPrice() >= filter.getPriceFrom())
+                .filter(p -> filter.getPriceTo() == null || p.getPrice() <= filter.getPriceTo())
+                .sorted((p1, p2) -> {
+                    if (direction == Sort.Direction.ASC) {
+                        return Double.compare(p1.getPrice(), p2.getPrice());
+                    } else {
+                        return Double.compare(p2.getPrice(), p1.getPrice());
+                    }
+                })
+                .toList();
+
+        int start = page * size;
+        int end = Math.min(start + size, filteredProducts.size());
+        List<Product> pagedList = filteredProducts.subList(Math.min(start, filteredProducts.size()), end);
+
+        return new PagedResponseDTO<>(
+                pagedList,
+                page,
+                size,
+                filteredProducts.size(),
+                (int) Math.ceil((double) filteredProducts.size() / size),
+                end >= filteredProducts.size());
+    }
 }
 

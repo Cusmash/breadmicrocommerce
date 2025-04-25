@@ -1,6 +1,7 @@
 package com.bread.productservice.service;
 
 import com.bread.productservice.dto.PagedResponseDTO;
+import com.bread.productservice.model.Flavor;
 import com.bread.productservice.model.Product;
 import com.bread.productservice.model.ProductType;
 import com.bread.productservice.repository.ProductRepository;
@@ -28,7 +29,7 @@ class ProductServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        sampleProduct = new Product("1", "Croissant", "Pan hojaldrado", 25.0, 10, "http://imgUrl.jpg", ProductType.GLUTEN);
+        sampleProduct = new Product("1", "Croissant", "Pan hojaldrado", 25.0, 10, "http://imgUrl.jpg", ProductType.GLUTEN, false, Flavor.MANTEQUILLA, 0.0);
     }
 
     @Test

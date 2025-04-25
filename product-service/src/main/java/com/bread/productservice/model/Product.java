@@ -5,10 +5,7 @@ import java.io.Serializable;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product implements Serializable { //Redis por default serializa los objetos a JSON, por lo que es necesario implementar Serializable para que funcione correctamente en Redis
-    
+
     @Id
     private String id;
 
@@ -41,6 +38,15 @@ public class Product implements Serializable { //Redis por default serializa los
     @NotBlank(message = "imgUrl cannot be empty")
     private String imgUrl;
 
-    @NotBlank(message = "Type cannot be empty")
+    @NotNull(message = "El tipo de producto es requerido")
     private ProductType type;
+
+    private boolean onSale = false;
+
+    @NotNull(message = "Flavor is required")
+    private Flavor flavor;
+
+    @DecimalMin(value = "0.0", inclusive = true, message = "Discount must be at least 0")
+    @DecimalMax(value = "100.0", inclusive = true, message = "Discount cannot exceed 100%")
+    private Double discountPercentage;
 }
