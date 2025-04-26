@@ -39,12 +39,12 @@ public class Product implements Serializable { //Redis por default serializa los
     private String imgUrl;
 
     @NotNull(message = "El tipo de producto es requerido")
-    private ProductType type;
+    private String type;
 
     private boolean onSale = false;
 
-    @NotNull(message = "Flavor is required")
-    private Flavor flavor;
+    @NotBlank(message = "flavor cannot be empty")
+    private String flavor;
 
     @DecimalMin(value = "0.0", inclusive = true, message = "Discount must be at least 0")
     @DecimalMax(value = "100.0", inclusive = true, message = "Discount cannot exceed 100%")

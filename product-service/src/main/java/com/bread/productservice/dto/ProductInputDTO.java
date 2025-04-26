@@ -1,8 +1,5 @@
 package com.bread.productservice.dto;
 
-import com.bread.productservice.model.Flavor;
-import com.bread.productservice.model.ProductType;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -29,14 +26,14 @@ public class ProductInputDTO {
     @Positive(message = "La cantidad debe ser mayor a 0")
     private Integer quantity;
 
-    @NotNull(message = "El tipo de producto es requerido")
-    private ProductType type;
+    @NotBlank(message = "Type cannot be empty")
+    private String type;
 
     private boolean onSale = false;
+    
+    @NotBlank(message = "flavor cannot be empty")
+    private String flavor;
 
-    @NotNull(message = "El tipo de producto es requerido")
-    private Flavor flavor;
-
-    @PositiveOrZero(message = "El descuento debe ser 0 o mayor")
+    @PositiveOrZero(message = "Discount percentage must be positive or zero")
     private Double discountPercentage;
 }

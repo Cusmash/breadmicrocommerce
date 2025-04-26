@@ -3,7 +3,6 @@ package com.bread.productservice.service;
 import com.bread.productservice.dto.PagedResponseDTO;
 import com.bread.productservice.dto.ProductFilterInput;
 import com.bread.productservice.model.Product;
-import com.bread.productservice.model.ProductType;
 import com.bread.productservice.repository.ProductRepository;
 
 import org.springframework.cache.annotation.CacheEvict;
@@ -89,13 +88,13 @@ public class ProductService {
         return productRepository.findByNameContainingIgnoreCase(name, pageable);
     }
 
-    public List<Product> filterProducts(ProductType type, Double priceFrom, Double priceTo, int page, int size) {
+    public List<Product> filterProducts(String type, Double priceFrom, Double priceTo, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
     
         if (type != null && priceFrom != null && priceTo != null) {
-            return productRepository.findByTypeAndPriceBetween(type, priceFrom, priceTo, pageable);
+            return productRepository.findByTypeIgnoreCaseAndPriceBetween(type, priceFrom, priceTo, pageable);
         } else if (type != null) {
-            return productRepository.findByType(type, pageable);
+            return productRepository.findByTypeIgnoreCase(type, pageable);
         } else if (priceFrom != null && priceTo != null) {
             return productRepository.findByPriceBetween(priceFrom, priceTo, pageable);
         } else {
@@ -137,14 +136,19 @@ public class ProductService {
         );
     }
 
-    private PagedResponseDTO<Product> buildResponse(Page<Product> pageProducts, int page, int size) {
-        return new PagedResponseDTO<>(
-                pageProducts.getContent(),
-                page,
-                size,
-                pageProducts.getTotalElements(),
-                pageProducts.getTotalPages(),
-                pageProducts.isLast());
+    public List<String> getAvailableFlavors() {
+        return mongoTemplate.query(Product.class)
+                .distinct("flavor")
+                .as(String.class)
+                .all();
     }
+    
+    public List<String> getAvailableTypes() {
+        return mongoTemplate.query(Product.class)
+                .distinct("type")
+                .as(String.class)
+                .all();
+    }
+
 }
 

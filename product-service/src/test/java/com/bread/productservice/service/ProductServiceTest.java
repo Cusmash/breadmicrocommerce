@@ -29,7 +29,7 @@ class ProductServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        sampleProduct = new Product("1", "Croissant", "Pan hojaldrado", 25.0, 10, "http://imgUrl.jpg", ProductType.GLUTEN, false, Flavor.MANTEQUILLA, 0.0);
+        sampleProduct = new Product("1", "Croissant", "Pan hojaldrado", 25.0, 10, "http://imgUrl.jpg", "GLUTEN", false, "MANTEQUILLA", 0.0);
     }
 
     @Test
@@ -59,9 +59,9 @@ class ProductServiceTest {
     @Test
     void shouldFilterProductsByType() {
         List<Product> products = List.of(sampleProduct);
-        when(productRepository.findByType(eq(ProductType.GLUTEN), any(Pageable.class))).thenReturn(products);
+        when(productRepository.findByTypeIgnoreCase(eq("GLUTEN"), any(Pageable.class))).thenReturn(products);
 
-        List<Product> result = productService.filterProducts(ProductType.GLUTEN, null, null, 0, 5);
+        List<Product> result = productService.filterProducts("GLUTEN", null, null, 0, 5);
         assertEquals(1, result.size());
     }
 
@@ -77,10 +77,10 @@ class ProductServiceTest {
     @Test
     void shouldFilterProductsByTypeAndPrice() {
         List<Product> products = List.of(sampleProduct);
-        when(productRepository.findByTypeAndPriceBetween(eq(ProductType.GLUTEN), eq(20.0), eq(30.0), any(Pageable.class)))
+        when(productRepository.findByTypeIgnoreCaseAndPriceBetween(eq("GLUTEN"), eq(20.0), eq(30.0), any(Pageable.class)))
                 .thenReturn(products);
 
-        List<Product> result = productService.filterProducts(ProductType.GLUTEN, 20.0, 30.0, 0, 5);
+        List<Product> result = productService.filterProducts("GLUTEN", 20.0, 30.0, 0, 5);
         assertEquals(1, result.size());
     }
 
@@ -102,7 +102,7 @@ class ProductServiceTest {
         update.setPrice(30.0);
         update.setQuantity(15);
         update.setImgUrl("http://nueva.img");
-        update.setType(ProductType.VEGAN);
+        update.setType("VEGAN");
 
         Product result = productService.updateProduct("1", update);
 

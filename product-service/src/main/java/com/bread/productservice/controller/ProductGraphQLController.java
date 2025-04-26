@@ -4,7 +4,6 @@ import com.bread.productservice.dto.PagedResponseDTO;
 import com.bread.productservice.dto.ProductInputDTO;
 import com.bread.productservice.dto.ProductFilterInput;
 import com.bread.productservice.model.Product;
-import com.bread.productservice.model.ProductType;
 import com.bread.productservice.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -107,7 +106,7 @@ public class ProductGraphQLController {
 
     @QueryMapping
     public List<Product> filterProducts(
-        @Argument ProductType type,
+        @Argument String type,
         @Argument Float priceFrom,
         @Argument Float priceTo,
         @Argument Integer page,
@@ -119,4 +118,15 @@ public class ProductGraphQLController {
             priceTo != null ? priceTo.doubleValue() : null,
             pageNumber, pageSize);
     }
+
+    @QueryMapping
+    public List<String> getAvailableFlavors() {
+        return productService.getAvailableFlavors();
+    }
+
+    @QueryMapping
+    public List<String> getAvailableTypes() {
+        return productService.getAvailableTypes();
+    }
+
 }

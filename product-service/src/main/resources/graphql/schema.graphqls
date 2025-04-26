@@ -1,20 +1,3 @@
-enum ProductType {
-    GLUTEN
-    GLUTEN_FREE
-    VEGAN
-    KETO
-}
-
-enum Flavor {
-   CHOCOLATE
-    CANELA
-    VAINILLA
-    FRESA
-    PLATANO
-    NUEZ
-    MANTEQUILLA
-}
-
 enum SortDirection {
   ASC
   DESC
@@ -27,8 +10,8 @@ type Product {
     price: Float!
     quantity: Int!
     imgUrl: String
-    type: ProductType
-    flavor: Flavor
+    type: String
+    flavor: String
     onSale: Boolean
     discountPercentage: Float
 }
@@ -39,15 +22,15 @@ input ProductInputDTO {
     price: Float!
     quantity: Int!
     imgUrl: String!
-    type: ProductType!
-    flavor: Flavor
+    type: String!
+    flavor: String!
     onSale: Boolean
     discountPercentage: Float
 }
 
 input ProductFilterInput {
-  types: [ProductType] 
-  flavors: [Flavor]    
+  type: [String]
+  flavor: [String]
   onSale: Boolean
   priceFrom: Float
   priceTo: Float
@@ -67,10 +50,13 @@ type Query {
     getFilteredProducts(filter: ProductFilterInput, page: Int, size: Int, sort: SortDirection): PagedProduct
     getProductById(id: ID!): Product
     searchProductsByName(name: String!, page: Int, size: Int): [Product]
+
+    getAvailableFlavors: [String]
+    getAvailableTypes: [String]
 }
 
 type Mutation {
-    createProduct(input: ProductInputDTO!): Product
-    updateProduct(id: ID!, input: ProductInputDTO!): Product
-    deleteProduct(id: ID!): Boolean
+  createProduct(input: ProductInputDTO!): Product
+  updateProduct(id: ID!, input: ProductInputDTO!): Product
+  deleteProduct(id: ID!): Boolean
 }

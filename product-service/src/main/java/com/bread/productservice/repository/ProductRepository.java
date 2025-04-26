@@ -1,11 +1,7 @@
 package com.bread.productservice.repository;
 
-import com.bread.productservice.model.Flavor;
 import com.bread.productservice.model.Product;
-import com.bread.productservice.model.ProductType;
-
 import java.util.List;
-
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
@@ -13,17 +9,19 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProductRepository extends MongoRepository<Product, String> {
 
-    List<Product> findByType(ProductType type, Pageable pageable);
+    List<Product> findByTypeIgnoreCase(String type, Pageable pageable);
+
+    List<Product> findByFlavorIgnoreCase(String flavor, Pageable pageable);
+
+    List<Product> findByOnSale(boolean onSale, Pageable pageable);
 
     List<Product> findByPriceBetween(Double priceFrom, Double priceTo, Pageable pageable);
-    
-    List<Product> findByTypeAndPriceBetween(ProductType type, Double priceFrom, Double priceTo, Pageable pageable);
-    
+
     List<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
 
-    List<Product> findByTypeIn(List<ProductType> types, Pageable pageable);
+    List<Product> findByTypeIgnoreCaseAndFlavorIgnoreCaseAndPriceBetween(String type, String flavor, Double priceFrom, Double priceTo, Pageable pageable);
 
-    List<Product> findByFlavorIn(List<Flavor> flavors, Pageable pageable);
+    List<Product> findByTypeIgnoreCaseAndPriceBetween(String type, Double priceFrom, Double priceTo, Pageable pageable);
 
-    List<Product> findByTypeInAndFlavorIn(List<ProductType> types, List<Flavor> flavors, Pageable pageable);
+    List<Product> findByFlavorIgnoreCaseAndPriceBetween(String flavor, Double priceFrom, Double priceTo, Pageable pageable);
 }
