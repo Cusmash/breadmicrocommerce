@@ -8,10 +8,16 @@ import com.bread.productservice.repository.ProductRepository;
 
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
+
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,9 +26,11 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final MongoTemplate mongoTemplate;
 
-    public ProductService(ProductRepository productRepository) {
+    public ProductService(ProductRepository productRepository, MongoTemplate mongoTemplate) {
         this.productRepository = productRepository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @Cacheable(value = "products_list")
@@ -95,36 +103,48 @@ public class ProductService {
         }
     }  
     
-    public PagedResponseDTO<Product> getFilteredProducts(ProductFilterInput filter, int page, int size, String sort) {
-        Sort.Direction direction = sort.equalsIgnoreCase("DESC") ? Sort.Direction.DESC : Sort.Direction.ASC;
-        Pageable pageable = PageRequest.of(page, size, Sort.by(direction, "price"));
+        public PagedResponseDTO<Product> getFilteredProducts(ProductFilterInput filter, int page, int size, String sort) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sort), "price"));
+        Query query = new Query().with(pageable);
 
-        List<Product> filteredProducts = productRepository.findAll().stream()
-                .filter(p -> filter.getType() == null || p.getType() == filter.getType())
-                .filter(p -> filter.getFlavor() == null || p.getFlavor() == filter.getFlavor())
-                .filter(p -> filter.getOnSale() == null || p.isOnSale() == filter.getOnSale())
-                .filter(p -> filter.getPriceFrom() == null || p.getPrice() >= filter.getPriceFrom())
-                .filter(p -> filter.getPriceTo() == null || p.getPrice() <= filter.getPriceTo())
-                .sorted((p1, p2) -> {
-                    if (direction == Sort.Direction.ASC) {
-                        return Double.compare(p1.getPrice(), p2.getPrice());
-                    } else {
-                        return Double.compare(p2.getPrice(), p1.getPrice());
-                    }
-                })
-                .toList();
+        if (filter != null) {
+            if (filter.getTypes() != null && !filter.getTypes().isEmpty()) {
+                query.addCriteria(Criteria.where("type").in(filter.getTypes()));
+            }
+            if (filter.getFlavors() != null && !filter.getFlavors().isEmpty()) {
+                query.addCriteria(Criteria.where("flavor").in(filter.getFlavors()));
+            }
+            if (filter.getOnSale() != null) {
+                query.addCriteria(Criteria.where("onSale").is(filter.getOnSale()));
+            }
+            if (filter.getPriceFrom() != null && filter.getPriceTo() != null) {
+                query.addCriteria(Criteria.where("price").gte(filter.getPriceFrom()).lte(filter.getPriceTo()));
+            }
+        }
 
-        int start = page * size;
-        int end = Math.min(start + size, filteredProducts.size());
-        List<Product> pagedList = filteredProducts.subList(Math.min(start, filteredProducts.size()), end);
+        List<Product> products = mongoTemplate.find(query, Product.class);
+        long total = mongoTemplate.count(Query.of(query).limit(-1).skip(-1), Product.class);
+
+        Page<Product> pageProducts = new PageImpl<>(products, pageable, total);
 
         return new PagedResponseDTO<>(
-                pagedList,
+            pageProducts.getContent(),
+            page,
+            size,
+            pageProducts.getTotalElements(),
+            pageProducts.getTotalPages(),
+            pageProducts.isLast()
+        );
+    }
+
+    private PagedResponseDTO<Product> buildResponse(Page<Product> pageProducts, int page, int size) {
+        return new PagedResponseDTO<>(
+                pageProducts.getContent(),
                 page,
                 size,
-                filteredProducts.size(),
-                (int) Math.ceil((double) filteredProducts.size() / size),
-                end >= filteredProducts.size());
+                pageProducts.getTotalElements(),
+                pageProducts.getTotalPages(),
+                pageProducts.isLast());
     }
 }
 

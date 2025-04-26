@@ -1,5 +1,6 @@
 package com.bread.productservice.repository;
 
+import com.bread.productservice.model.Flavor;
 import com.bread.productservice.model.Product;
 import com.bread.productservice.model.ProductType;
 
@@ -19,4 +20,10 @@ public interface ProductRepository extends MongoRepository<Product, String> {
     List<Product> findByTypeAndPriceBetween(ProductType type, Double priceFrom, Double priceTo, Pageable pageable);
     
     List<Product> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    List<Product> findByTypeIn(List<ProductType> types, Pageable pageable);
+
+    List<Product> findByFlavorIn(List<Flavor> flavors, Pageable pageable);
+
+    List<Product> findByTypeInAndFlavorIn(List<ProductType> types, List<Flavor> flavors, Pageable pageable);
 }

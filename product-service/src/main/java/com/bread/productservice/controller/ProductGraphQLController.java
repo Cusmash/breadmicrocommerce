@@ -47,6 +47,9 @@ public class ProductGraphQLController {
         int pageNumber = (page != null) ? page : 0;
         int pageSize = (size != null) ? size : 10;
         String sortDirection = (sort != null && sort.equalsIgnoreCase("DESC")) ? "DESC" : "ASC";
+        if (filter == null) {
+            return productService.getAllProductsPagedSorted(pageNumber, pageSize, sortDirection);
+        }
         return productService.getFilteredProducts(filter, pageNumber, pageSize, sortDirection);
     }
 

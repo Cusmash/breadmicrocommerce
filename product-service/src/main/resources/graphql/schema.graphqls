@@ -46,11 +46,11 @@ input ProductInputDTO {
 }
 
 input ProductFilterInput {
-    type: ProductType
-    flavor: Flavor
-    onSale: Boolean
-    priceFrom: Float
-    priceTo: Float
+  types: [ProductType] 
+  flavors: [Flavor]    
+  onSale: Boolean
+  priceFrom: Float
+  priceTo: Float
 }
 
 type PagedProduct {

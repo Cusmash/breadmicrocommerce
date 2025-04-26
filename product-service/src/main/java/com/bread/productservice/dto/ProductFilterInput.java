@@ -1,15 +1,18 @@
 package com.bread.productservice.dto;
 
 import com.bread.productservice.model.ProductType;
+
+import java.util.List;
+
 import com.bread.productservice.model.Flavor;
 
 import lombok.Data;
 
 @Data
 public class ProductFilterInput {
-    private ProductType type;
-    private Flavor flavor;
+    private List<ProductType> types; 
+    private List<Flavor> flavors;    
     private Boolean onSale;
-    private Float priceFrom;
-    private Float priceTo;
+    private Double priceFrom;
+    private Double priceTo;
 }
