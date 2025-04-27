@@ -42,5 +42,18 @@ services:
       - zookeeper
     restart: always
 
+  product-service:
+    build:
+      context: .            
+      dockerfile: Dockerfile 
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+      - redis
+      - kafka
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+
 volumes:
   mongo_data:

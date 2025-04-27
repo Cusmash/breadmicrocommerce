@@ -29,8 +29,8 @@ input ProductInputDTO {
 }
 
 input ProductFilterInput {
-  type: [String]
-  flavor: [String]
+  types: [String]
+  flavors: [String]
   onSale: Boolean
   priceFrom: Float
   priceTo: Float

@@ -1,17 +1,14 @@
 server:
-  port: 8081
+  port: 8080
 
 spring:
   data:
     mongodb:
-      host: localhost
+      host: mongo_microcommerce
       port: 27017
-      database: productdb
+      database: productdb 
     redis:
-      host: localhost
+      host: redis_microcommerce
       port: 6379
   cache:
     type: redis
-
-  # docker run -d --name mongo_microcommerce -p 27017:27017 mongo:latest
-  #   docker pull mongo
