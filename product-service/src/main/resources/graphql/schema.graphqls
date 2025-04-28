@@ -50,6 +50,7 @@ type Query {
     getFilteredProducts(filter: ProductFilterInput, page: Int, size: Int, sort: SortDirection): PagedProduct
     getProductById(id: ID!): Product
     searchProductsByName(name: String!, page: Int, size: Int): [Product]
+    filterProducts(type: String!, page: Int, size: Int): [Product]
 
     getAvailableFlavors: [String]
     getAvailableTypes: [String]

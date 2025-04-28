@@ -102,7 +102,7 @@ public class ProductService {
         }
     }  
     
-        public PagedResponseDTO<Product> getFilteredProducts(ProductFilterInput filter, int page, int size, String sort) {
+    public PagedResponseDTO<Product> getFilteredProducts(ProductFilterInput filter, int page, int size, String sort) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sort), "price"));
         Query query = new Query().with(pageable);
 
