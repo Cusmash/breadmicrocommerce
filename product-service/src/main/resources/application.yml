@@ -12,3 +12,12 @@ spring:
       port: 6379
   cache:
     type: redis
+
+logging:
+  level:
+    org.springframework: INFO
+    com.bread.productservice: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %msg%n"
+  file:
+    name: logs/product-service.log

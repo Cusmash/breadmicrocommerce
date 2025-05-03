@@ -5,6 +5,8 @@ import com.bread.productservice.dto.ProductFilterInput;
 import com.bread.productservice.model.Product;
 import com.bread.productservice.repository.ProductRepository;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -26,6 +28,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final MongoTemplate mongoTemplate;
+    private static final Logger log = LoggerFactory.getLogger(ProductService.class);
 
     public ProductService(ProductRepository productRepository, MongoTemplate mongoTemplate) {
         this.productRepository = productRepository;
@@ -44,7 +47,13 @@ public class ProductService {
 
     @CacheEvict(value = { "products_list", "product_by_id" }, allEntries = true)
     public Product createProduct(Product product) {
-        return productRepository.save(product);
+        log.info("Creating product: {}", product);
+        try{
+            return productRepository.save(product);
+        } catch (Exception e) {
+            log.error("Error creating product: {}", e.getMessage());
+            throw new RuntimeException("Error creating product: " + e.getMessage());
+        }
     }
 
     @CacheEvict(value = { "products_list", "product_by_id" }, allEntries = true)
@@ -60,7 +69,10 @@ public class ProductService {
                 
                 return productRepository.save(existingProduct);
             })
-            .orElseThrow(() -> new RuntimeException("Product not found with id: " + id));
+            .orElseThrow(() -> {
+                log.error("Product not found with id: {}", id);
+                return new RuntimeException("Product not found with id: " + id);
+            });
     }
 
     @CacheEvict(value = { "products_list", "product_by_id" }, allEntries = true)
